@@ -2,7 +2,15 @@ CREATE DATABASE IF NOT EXISTS thebookclub;
 
 use thebookclub;
 
-CREATE TABLE IF NOT EXISTS users();
+CREATE TABLE IF NOT EXISTS users(
+  user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  auth_kay VARCHAR(200),
+  access_token VARCHAR(200),
+  created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  modified_at TIMESTAMP NOT NULL DEFAULT current_timestamp on UPDATE current_timestamp
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 CREATE TABLE IF NOT EXISTS books (
     books_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
