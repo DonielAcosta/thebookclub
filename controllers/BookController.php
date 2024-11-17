@@ -45,6 +45,7 @@ class BookController extends Controller {
     return $this->redirect(['book/all']);
   }
 
+
   public function actionNew() {
     if(Yii::$app->user->isGuest) {
       return $this->goHome();

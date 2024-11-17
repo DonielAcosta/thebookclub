@@ -171,5 +171,41 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface{
         }
         return true;
     }
-    
+    public function getVotes(){
+        return $this->hasMany(BookScore::class, ['user_id' => 'id'])->all();
+    }
+    public function getVotesCount(){
+        return count($this->votes);
+    }
+    public function getVotesAvg(){
+        $a =0;
+        $sum=0;
+        foreach($this->votes as $v){
+            $sum += $v->score;
+            $a ++;
+        }
+        if($a>0){
+            return 'sin votos';
+        }
+        return sprintf("%0.2f",$sum/$a);
+    }
+    public function hasVotedFor($book_id){
+        $bookSc = BookScore::find()->where(['book_id' => $book_id,'user_id'=>$this->id])->one();
+
+        if(empty($bookSc)){
+            return false; // No hay ningún registro asociado al usuario y libro en la tabla BookScore. 
+                         // En este caso, el usuario no ha votado este libro. 
+                         // Esto puede ser un error en la base de datos o un error en el código. 
+                         // En cualquier caso, devolvemos false para indicar que no se ha votado el libro. 
+                         // No se puede votar un libro que no existe en la base de datos, ya que se espera que exista. 
+                         // Por lo tanto, este método debería ser revisado y corregido según sea necesario. 
+                         // Esto puede ser una situación de error en la base de datos o en el código.
+        }
+        return true;
+    }
+    public function getVoteForBook($book_id) {
+        return $this->hasOne(BookScore::class, ['user_id' => 'user_id'])
+          ->where(['book_id' => $book_id])
+          ->one();
+      }
 }
