@@ -10,6 +10,10 @@ use Exception;
 class UserController extends Controller{
 
     public function actionNew(){
+        if(!Yii::$app->user->isGuest){
+            Yii::$app->session->setFlash('warning', 'no puedes crear usuario estando logueado');
+            return $this->goHome();
+        }
         $user = new User;
         if($user->load(Yii::$app->request->post()) ){
             //lo que cargo se 
@@ -23,6 +27,8 @@ class UserController extends Controller{
                   return;
                 }
             }
+            $user->password = '';
+            $user->password_repeat = '';
         }
         return $this->render('new.tpl',['user' => $user]); 
    }

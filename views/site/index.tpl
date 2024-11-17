@@ -1,12 +1,15 @@
-{use class="Yii" }
+{use class="Yii"}
 {use class='yii\helpers\Html'}
-{use class='app\models\Book'}
-<h1>Indice del Sitio.</h1>
+{use class="app\models\Book"}
+
+<h1>Índice de sitio.</h1>
 
 {if Yii::$app->user->isGuest}
-hola invitado {Html::a('login',['site/login'])}
+hola invitado, {Html::a('login', ['site/login'])}
 {else}
-hola {Yii::$app->user->identity->username}
+hola {Yii::$app->user->identity->username} 👋
 {/if}
 
-<p>{$book_count} Libros en el Sistema</p>
+
+<p>Hay {$book_count} libros en el sistema</p>
+<p>{Html::a('crear libro', ['book/new'])}</p>

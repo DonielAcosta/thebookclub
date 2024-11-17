@@ -2,6 +2,7 @@
 
 namespace app\models;
 use yii\db\ActiveRecord;
+use app\models\UserBook;
 
 class User extends ActiveRecord implements \yii\web\IdentityInterface{
 
@@ -10,7 +11,9 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface{
     // public $password;
     // public $authKey;
     // public $accessToken;
-
+    public $password_repeat;
+    public $email;
+    // public $bio;
     // private static $users = [
     //     '100' => [
     //         'id' => '100',
@@ -28,7 +31,36 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface{
     //     ],
     // ];
 
+    // public static function tableName(){
+    //     return 'users';
+    // }
 
+    public function attributeLabels(){
+        return [
+            'username' => 'Usuario',
+            'password' => 'Password',
+        ];
+    }
+
+    public function rules(){
+        return [
+            [['username', 'password'],'required'],
+            ['username','filter','filter'=>function($a){
+                $a =ltrim(rtrim($a));
+                $a = strtolower($a);
+                return $a;
+            }],
+            [['username'], 'unique'],
+            [['username'], 'string','min'=>4,'max'=>20],
+            [['password'],'string','min'=>3,'max'=>20],
+            [['password_repeat'],'compare','compareAttribute'=>'password'],
+            ['bio', 'default'],
+            ['email','email'],
+        ];
+    }
+    public function attributesHints(){
+      return ['username'=>'debera ser unico en el sistema'];                                                                                                                                                                                                                     
+    }
     /**
      * {@inheritdoc}
      */
@@ -90,20 +122,19 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface{
     /**
      * {@inheritdoc}
      */
-    public function getAuthKey(){
-        return $this->authkey;
-    }
-
-    public function setAuthKey($value) {
-        $this->auth_key = $value; // Asegúrate de que auth_key existe como atributo o en la base de datos
+    public function getAuthKey()
+    {
+        return $this->auth_key;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey){
+    public function validateAuthKey($authKey)
+    {
         return $this->authKey === $authKey;
     }
+
 
     /**
      * Validates password
@@ -122,4 +153,23 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface{
     public function beforeSave($insert){
         return parent::beforeSave($insert);
     }
+    public function hasBook($book_id): bool {
+        $ub = UserBook::find()->where([
+            'user_id' => $this->id,
+            'book_id' => $book_id
+        ])->all(); 
+    
+        if(empty($ub)){
+            return false; // No hay ningún registro asociado al usuario y libro en la tabla UserBook. 
+                         // En este caso, el usuario no tiene este libro. 
+                         // Esto puede ser un error en la base de datos o un error en el código. 
+                         // En cualquier caso, devolvemos false para indicar que no se encuentra el libro. 
+                         // De esta manera, evitamos que el usuario pueda agregar un libro que no está en la base de datos. 
+                         // No se puede agregar un libro que no existe en la base de datos, ya que se espera que exista. 
+                         // Por lo tanto, este método debería ser revisado y corregido según sea necesario. 
+                         // Esto puede ser una situación de error en la base de datos o en el código.
+        }
+        return true;
+    }
+    
 }

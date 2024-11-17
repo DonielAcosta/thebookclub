@@ -20,4 +20,13 @@ class Author extends ActiveRecord{
     public function getFlag(){
         return sprintf("flags/%s.png", $this->nationality);
     }
+
+    public static function getAuthorList(){
+        $authors = self::find()->orderBy('name')->all();
+        $ret = [];
+        foreach($authors as $author){
+            $ret[$author->id] = $author->name;
+        }
+        return $ret;
+    }
 }
